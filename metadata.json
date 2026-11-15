@@ -1,0 +1,6 @@
+{
+  "name": "MineMAP",
+  "description": "マインクラフトのX・Y・Z座標を入力して地図として可視化し、初期スポーン地点・拠点・村・ネザーゲートなどを絵文字アイコン付きで管理できるオフライン対応PWAアプリ。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,14 @@
+node_modules/
+build/
+dist/
+dev-dist/
+coverage/
+.aistudio
+.aistudio/
+.aistudio/**
+.DS_Store
+Thumbs.db
+*.log
+*.local
+.env*
+!.env.example
