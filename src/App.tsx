@@ -9,7 +9,6 @@ import { WaypointListPanel } from './components/WaypointListPanel';
 import { WaypointModal } from './components/WaypointModal';
 import { WorldAndPlayerModal } from './components/WorldAndPlayerModal';
 import {
-  DEFAULT_PLAYER_POSITION,
   DEFAULT_WORLDS,
   DIMENSION_CONFIGS,
   STORAGE_KEYS,
@@ -40,7 +39,7 @@ export default function App() {
   const [isWorldsHydrated, setIsWorldsHydrated] = useState(false);
 
   const [playerPosition, setPlayerPosition] = useState<PlayerPosition | null>(() =>
-    loadLocalJson<PlayerPosition | null>(STORAGE_KEYS.PLAYER_POSITION, DEFAULT_PLAYER_POSITION)
+    loadLocalJson<PlayerPosition | null>(STORAGE_KEYS.PLAYER_POSITION, null)
   );
   const [isPlayerHydrated, setIsPlayerHydrated] = useState(false);
 
@@ -104,7 +103,7 @@ export default function App() {
 
     loadIndexedDBWithMigration<PlayerPosition | null>(
       INDEXED_DB_KEYS.PLAYER_POSITION,
-      DEFAULT_PLAYER_POSITION
+      null
     ).then((loaded) => {
       if (!active) return;
       if (!didEditPlayerRef.current) {
@@ -177,14 +176,7 @@ export default function App() {
     setEditingWaypoint(null);
     setModalFromMapTap(Boolean(coords));
     setModalInitialCoords(
-      coords
-        ? { x: coords.x, z: coords.z, dimension: activeDimension }
-        : {
-            x: playerPosition?.dimension === activeDimension ? playerPosition.x : DEFAULT_PLAYER_POSITION.x,
-            y: playerPosition?.dimension === activeDimension ? playerPosition.y : DEFAULT_PLAYER_POSITION.y,
-            z: playerPosition?.dimension === activeDimension ? playerPosition.z : DEFAULT_PLAYER_POSITION.z,
-            dimension: activeDimension,
-          }
+      coords ? { x: coords.x, z: coords.z, dimension: activeDimension } : null
     );
     setIsWaypointModalOpen(true);
   };

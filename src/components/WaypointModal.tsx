@@ -43,9 +43,9 @@ export const WaypointModal: React.FC<WaypointModalProps> = ({
   onSave,
 }) => {
   const [name, setName] = useState('');
-  const [xStr, setXStr] = useState('0');
-  const [yStr, setYStr] = useState('64');
-  const [zStr, setZStr] = useState('0');
+  const [xStr, setXStr] = useState('');
+  const [yStr, setYStr] = useState('');
+  const [zStr, setZStr] = useState('');
   const [dimension, setDimension] = useState<DimensionId>('overworld');
   const [category, setCategory] = useState<CategoryId>('base');
   const [icon, setIcon] = useState('🏠');
@@ -56,7 +56,7 @@ export const WaypointModal: React.FC<WaypointModalProps> = ({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [autoFillEnabled, setAutoFillEnabled] = useState<boolean>(() => {
     const saved = loadLocalString(STORAGE_KEYS.AUTO_FILL_PLAYER_COORDS);
-    return saved === null ? true : saved === 'true';
+    return saved === 'true';
   });
 
   // Fallback to default coordinates when playerPosition is unknown (null)
@@ -102,19 +102,24 @@ export const WaypointModal: React.FC<WaypointModalProps> = ({
       setColor(cat.pinColor);
       setNote('');
 
-      if (!isFromMapTap && autoFillEnabled) {
-        setXStr(String(resolvedPlayerOrDefault.x));
-        setYStr(String(resolvedPlayerOrDefault.y));
-        setZStr(String(resolvedPlayerOrDefault.z));
-        setDimension(resolvedPlayerOrDefault.dimension);
-      } else {
-        setXStr(String(initialCoords?.x ?? DEFAULT_PLAYER_POSITION.x));
+      if (isFromMapTap && initialCoords) {
+        setXStr(String(initialCoords.x));
         setYStr(
-          initialCoords?.y !== undefined && initialCoords?.y !== null
+          initialCoords.y !== undefined && initialCoords.y !== null
             ? String(initialCoords.y)
-            : String(DEFAULT_PLAYER_POSITION.y)
+            : ''
         );
-        setZStr(String(initialCoords?.z ?? DEFAULT_PLAYER_POSITION.z));
+        setZStr(String(initialCoords.z));
+        setDimension(initialCoords.dimension);
+      } else if (autoFillEnabled && playerPosition) {
+        setXStr(String(playerPosition.x));
+        setYStr(String(playerPosition.y));
+        setZStr(String(playerPosition.z));
+        setDimension(playerPosition.dimension);
+      } else {
+        setXStr('');
+        setYStr('');
+        setZStr('');
         setDimension(initialCoords?.dimension ?? activeDimension);
       }
     }
@@ -167,12 +172,14 @@ export const WaypointModal: React.FC<WaypointModalProps> = ({
     }
   };
 
-  const parsedX = Number(xStr);
-  const parsedZ = Number(zStr);
-  const portalPreview =
-    !Number.isNaN(parsedX) && !Number.isNaN(parsedZ)
-      ? convertDimensionCoords(parsedX, parsedZ, dimension)
-      : null;
+  const hasCoordsForPreview =
+    xStr.trim() !== '' &&
+    zStr.trim() !== '' &&
+    !Number.isNaN(Number(xStr)) &&
+    !Number.isNaN(Number(zStr));
+  const portalPreview = hasCoordsForPreview
+    ? convertDimensionCoords(Number(xStr), Number(zStr), dimension)
+    : null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -322,7 +329,8 @@ export const WaypointModal: React.FC<WaypointModalProps> = ({
                   inputMode="decimal"
                   value={xStr}
                   onChange={(e) => setXStr(e.target.value)}
-                  className="min-h-[44px] w-full bg-transparent px-2 text-sm font-semibold font-mono-tabular text-slate-900 dark:text-slate-100 focus:outline-none"
+                  placeholder="0"
+                  className="min-h-[44px] w-full bg-transparent px-2 text-sm font-semibold font-mono-tabular text-slate-900 dark:text-slate-100 placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -346,7 +354,7 @@ export const WaypointModal: React.FC<WaypointModalProps> = ({
                   value={yStr}
                   onChange={(e) => setYStr(e.target.value)}
                   placeholder="64"
-                  className="min-h-[44px] w-full bg-transparent px-2 text-sm font-semibold font-mono-tabular text-slate-900 dark:text-slate-100 focus:outline-none"
+                  className="min-h-[44px] w-full bg-transparent px-2 text-sm font-semibold font-mono-tabular text-slate-900 dark:text-slate-100 placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -369,7 +377,8 @@ export const WaypointModal: React.FC<WaypointModalProps> = ({
                   inputMode="decimal"
                   value={zStr}
                   onChange={(e) => setZStr(e.target.value)}
-                  className="min-h-[44px] w-full bg-transparent px-2 text-sm font-semibold font-mono-tabular text-slate-900 dark:text-slate-100 focus:outline-none"
+                  placeholder="0"
+                  className="min-h-[44px] w-full bg-transparent px-2 text-sm font-semibold font-mono-tabular text-slate-900 dark:text-slate-100 placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
                 />
               </div>
             </div>

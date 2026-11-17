@@ -49,9 +49,9 @@ export const WorldAndPlayerModal: React.FC<WorldAndPlayerModalProps> = ({
   onSavePlayerPosition,
   onImportWorldData,
 }) => {
-  const [px, setPx] = useState(String(playerPosition?.x ?? 0));
-  const [py, setPy] = useState(String(playerPosition?.y ?? 64));
-  const [pz, setPz] = useState(String(playerPosition?.z ?? 0));
+  const [px, setPx] = useState(playerPosition ? String(playerPosition.x) : '');
+  const [py, setPy] = useState(playerPosition ? String(playerPosition.y) : '');
+  const [pz, setPz] = useState(playerPosition ? String(playerPosition.z) : '');
   const [pDim, setPDim] = useState<DimensionId>(playerPosition?.dimension ?? activeDimension);
   const [quickPaste, setQuickPaste] = useState('');
   const [newWorldName, setNewWorldName] = useState('');
@@ -61,9 +61,9 @@ export const WorldAndPlayerModal: React.FC<WorldAndPlayerModalProps> = ({
 
   useEffect(() => {
     if (!isOpen) return;
-    setPx(String(playerPosition?.x ?? 0));
-    setPy(String(playerPosition?.y ?? 64));
-    setPz(String(playerPosition?.z ?? 0));
+    setPx(playerPosition ? String(playerPosition.x) : '');
+    setPy(playerPosition ? String(playerPosition.y) : '');
+    setPz(playerPosition ? String(playerPosition.z) : '');
     setPDim(playerPosition?.dimension ?? activeDimension);
     setQuickPaste('');
     setFeedback(null);
@@ -199,6 +199,9 @@ export const WorldAndPlayerModal: React.FC<WorldAndPlayerModalProps> = ({
                   type="button"
                   onClick={() => {
                     onSavePlayerPosition(null);
+                    setPx('');
+                    setPy('');
+                    setPz('');
                     setFeedback('現在地ピンを解除しました。');
                   }}
                   className="text-xs font-medium text-rose-500 hover:underline"
@@ -219,9 +222,9 @@ export const WorldAndPlayerModal: React.FC<WorldAndPlayerModalProps> = ({
 
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { label: 'X', val: px, set: setPx },
-                  { label: 'Y', val: py, set: setPy },
-                  { label: 'Z', val: pz, set: setPz },
+                  { label: 'X', val: px, set: setPx, placeholder: 'X (例: 0)' },
+                  { label: 'Y', val: py, set: setPy, placeholder: 'Y (例: 64)' },
+                  { label: 'Z', val: pz, set: setPz, placeholder: 'Z (例: 0)' },
                 ].map((axis) => (
                   <div
                     key={axis.label}
@@ -239,8 +242,9 @@ export const WorldAndPlayerModal: React.FC<WorldAndPlayerModalProps> = ({
                       inputMode="decimal"
                       value={axis.val}
                       onChange={(e) => axis.set(e.target.value)}
+                      placeholder={axis.placeholder}
                       aria-label={`現在地 ${axis.label}`}
-                      className="min-h-[44px] w-full bg-transparent px-2 text-sm font-semibold font-mono-tabular text-slate-900 dark:text-slate-100 focus:outline-none"
+                      className="min-h-[44px] w-full bg-transparent px-2 text-sm font-semibold font-mono-tabular text-slate-900 dark:text-slate-100 placeholder:font-normal placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
                     />
                   </div>
                 ))}
